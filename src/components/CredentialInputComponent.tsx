@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import FetchExecutionComponent from "./FetchExecutionComponent";
 
 function CredentialInputComponent() {
   const { register, handleSubmit } = useForm();
@@ -8,12 +9,21 @@ function CredentialInputComponent() {
   };
 
   return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
-      <p style={LabelInLineStyles}>User name </p>
+    <form
+      onSubmit={handleSubmit((data) =>
+        FetchExecutionComponent(data.environment, data.username, data.password)
+      )}
+    >
+      <p style={LabelInLineStyles}>Environment</p>
+      <select {...register("environment")}>
+        <option value={"sys1"}>sys1</option>
+        <option value={"sys2"}>sys2</option>
+      </select>
+      <p style={LabelInLineStyles}>Username </p>
       <input
         type="text"
         required
-        {...register("userName", { required: true })}
+        {...register("username", { required: true })}
       />
       <p style={LabelInLineStyles}> Password </p>
       <input
