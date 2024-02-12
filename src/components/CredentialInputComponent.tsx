@@ -43,8 +43,6 @@ function CredentialInputComponent() {
       username: string,
       password: string
     ) => {
-      console.log("test");
-
       try {
         setIsLoading(true);
         await environmentConfigs
