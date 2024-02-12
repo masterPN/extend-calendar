@@ -98,34 +98,54 @@ function CredentialInputComponent() {
   return (
     <>
       <form onSubmit={handleSubmit(OnSubmit)}>
-        <p style={LabelInLineStyles}>Host </p>
-        <input type="text" required {...register("host", { required: true })} />
-        <p style={LabelInLineStyles}> Port </p>
+        <label htmlFor="host" style={LabelInLineStyles}>
+          Host
+        </label>
+        <input
+          type="text"
+          id="host"
+          required
+          {...register("host", { required: true })}
+        />
+        <label htmlFor="port" style={LabelInLineStyles}>
+          Port
+        </label>
         <input
           type="number"
+          id="port"
           required
           {...register("port", { required: true })}
         />
         <p></p>
-        <p style={LabelInLineStyles}>Environment </p>
-        <select {...register("env")}>
+        <label htmlFor="environment" style={LabelInLineStyles}>
+          Environment
+        </label>
+        <select id="environment" {...register("env")}>
           <option value={"sys0"}>sys0</option>
           <option value={"sys1"}>sys1</option>
         </select>
-        <p style={LabelInLineStyles}> Username </p>
+        <label htmlFor="username" style={LabelInLineStyles}>
+          Username
+        </label>
         <input
           type="text"
+          id="username"
           required
           {...register("username", { required: true })}
         />
-        <p style={LabelInLineStyles}> Password </p>
+        <label htmlFor="password" style={LabelInLineStyles}>
+          Password
+        </label>
         <input
           type="password"
+          id="password"
           required
           {...register("password", { required: true })}
         />
         <p style={LabelInLineStyles}> </p>
-        <input type="submit" />
+        <button type="submit" id="execute">
+          Execute
+        </button>
       </form>
       <p>{result}</p>
     </>
