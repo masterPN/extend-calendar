@@ -1,7 +1,7 @@
 function TitleComponent() {
   return (
     <>
-      <p>Extend Calendars</p>
+      <p className="text-center font-sans text-4xl">Extend Calendars</p>
     </>
   );
 }

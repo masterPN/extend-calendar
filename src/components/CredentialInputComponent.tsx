@@ -7,10 +7,6 @@ function CredentialInputComponent() {
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const LabelInLineStyles = {
-    display: "inline",
-  };
-
   interface environmentConfig {
     env: string;
     client: number;
@@ -96,54 +92,76 @@ function CredentialInputComponent() {
   return (
     <>
       <form onSubmit={handleSubmit(OnSubmit)}>
-        <label htmlFor="host" style={LabelInLineStyles}>
-          Host
-        </label>
-        <input
-          type="text"
-          id="host"
-          required
-          {...register("host", { required: true })}
-        />
-        <label htmlFor="port" style={LabelInLineStyles}>
-          Port
-        </label>
-        <input
-          type="number"
-          id="port"
-          required
-          {...register("port", { required: true })}
-        />
-        <p></p>
-        <label htmlFor="environment" style={LabelInLineStyles}>
-          Environment
-        </label>
-        <select id="environment" {...register("env")}>
-          <option value={"sys0"}>sys0</option>
-          <option value={"sys1"}>sys1</option>
-        </select>
-        <label htmlFor="username" style={LabelInLineStyles}>
-          Username
-        </label>
-        <input
-          type="text"
-          id="username"
-          required
-          {...register("username", { required: true })}
-        />
-        <label htmlFor="password" style={LabelInLineStyles}>
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          required
-          {...register("password", { required: true })}
-        />
-        <p style={LabelInLineStyles}> </p>
-        <button type="submit" id="execute">
-          Execute
-        </button>
+        <div className="my-4">
+          <div className="block lg:inline-block my-4 lg:my-0">
+            <label htmlFor="host" className="inline mx-4">
+              Host
+            </label>
+            <input
+              type="text"
+              id="host"
+              required
+              className="border-2"
+              {...register("host", { required: true })}
+            />
+          </div>
+          <div className="block lg:inline-block">
+            <label htmlFor="port" className="inline mx-4">
+              Port
+            </label>
+            <input
+              type="number"
+              id="port"
+              required
+              className="max-w-32 border-2"
+              {...register("port", { required: true })}
+            />
+          </div>
+        </div>
+        <div className="my-4">
+          <label htmlFor="environment" className="inline mx-4">
+            Environment
+          </label>
+          <select id="environment" className="border-4" {...register("env")}>
+            <option value={"sys0"}>sys0</option>
+            <option value={"sys1"}>sys1</option>
+          </select>
+        </div>
+        <div className="my-4">
+          <div className="block lg:inline-block my-4 lg:my-0">
+            <label htmlFor="username" className="inline mx-4">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              required
+              className="border-2"
+              {...register("username", { required: true })}
+            />
+          </div>
+          <div className="block lg:inline-block">
+            <label htmlFor="password" className="inline mx-4">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              required
+              className="border-2"
+              {...register("password", { required: true })}
+            />
+          </div>
+        </div>
+        <div className="my-4">
+          <button
+            type="submit"
+            id="execute"
+            className="bg-green-400 min-w-24 min-h-10"
+          >
+            Execute
+          </button>
+        </div>
       </form>
       <p>{result}</p>
     </>
