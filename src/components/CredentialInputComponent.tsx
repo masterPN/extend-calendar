@@ -5,16 +5,15 @@ import axios from "axios";
 function CredentialInputComponent() {
   const { register, handleSubmit } = useForm<CredentialInput>();
   const [result, setResult] = useState("");
+  const environmentConfigs: environmentConfig[] = [
+    { env: "sys0", client: 0 },
+    { env: "sys0", client: 1 },
+  ];
 
   interface environmentConfig {
     env: string;
     client: number;
   }
-
-  const environmentConfigs: environmentConfig[] = [
-    { env: "sys0", client: 0 },
-    { env: "sys1", client: 1 },
-  ];
 
   type CredentialInput = {
     host: string;
@@ -24,70 +23,102 @@ function CredentialInputComponent() {
     password: string;
   };
 
-  const OnSubmit = (data: CredentialInput) => {
-    const host = data.host;
-    const port = data.port;
-    const env = data.env;
-    const username = data.username;
-    const password = data.password;
+  interface PostExecutionResponse {
+    runId: number;
+  }
 
-    const fetchData = async (
+  interface RunIdMap {
+    client: number;
+    runId: number;
+  }
+
+  const OnSubmit = (data: CredentialInput) => {
+    const postExecutions = async (
       host: string,
       port: number,
       env: string,
       username: string,
       password: string
     ) => {
-      try {
-        await environmentConfigs
-          .filter((config: environmentConfig) => config.env === env)
-          .map((envConfig) => {
-            const data = JSON.stringify({
-              object_name: "SCRI.EXECUTE.WITH.JSON.INPUT.JSON",
-              execution_option: "execute",
-            });
+      const runIdMaps: RunIdMap[] = [];
+      let resultString = "";
 
-            const config = {
-              method: "post",
-              maxBodyLength: Infinity,
-              url:
-                "https://" +
-                host +
-                ":" +
-                port +
-                "/ae/api/v1/" +
-                envConfig.client +
-                "/executions",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              auth: {
-                username: username,
-                password: password,
-              },
-              data: data,
-            };
-
-            setResult("Loading " + { env } + "...");
-            axios
-              .request(config)
-              .then((response) => {
-                console.log(JSON.stringify(response.data));
-                setResult(JSON.stringify(response.data));
-              })
-              .catch((error) => {
-                console.log("error!!!");
-
-                console.log(error);
-                setResult(error.response?.data?.message || error.message);
-              });
+      environmentConfigs
+        .filter((config: environmentConfig) => config.env === env)
+        .map(async (envConfig) => {
+          const data = JSON.stringify({
+            object_name: "SCRI.EXECUTE.WITH.JSON.INPUT.JSON",
+            execution_option: "execute",
           });
-      } finally {
-        console.log("done");
-      }
+
+          const config = {
+            method: "post",
+            maxBodyLength: Infinity,
+            url:
+              "https://" +
+              host +
+              ":" +
+              port +
+              "/ae/api/v1/" +
+              envConfig.client +
+              "/executions",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            auth: {
+              username: username,
+              password: password,
+            },
+            data: data,
+          };
+
+          resultString += "Loading Client " + envConfig.client + "...\n";
+          setResult(resultString);
+          await axios
+            .request(config)
+            .then((response) => {
+              const postExecutionResponse =
+                response.data as PostExecutionResponse;
+              console.log(
+                "Client " +
+                  envConfig.client +
+                  "has been executed with run_id " +
+                  postExecutionResponse.runId
+              );
+              runIdMaps.push({
+                client: envConfig.client,
+                runId: postExecutionResponse.runId,
+              });
+              resultString += "Client " + envConfig.client + " - SUCCESS\n";
+              setResult(resultString);
+            })
+            .catch((error) => {
+              console.log("error from postExecutions");
+              console.log(error);
+              alert(
+                "Please check client" +
+                  envConfig.client +
+                  " - " +
+                  (error.response?.data?.message || error.message) +
+                  "\n"
+              );
+              resultString += "Client " + envConfig.client + " - FAILED\n";
+              setResult(resultString);
+            });
+        });
     };
 
-    fetchData(host, port, env, username, password);
+    async function main(data: CredentialInput) {
+      await postExecutions(
+        data.host,
+        data.port,
+        data.env,
+        data.username,
+        data.password
+      );
+    }
+
+    main(data);
   };
 
   return (
@@ -164,7 +195,13 @@ function CredentialInputComponent() {
           </button>
         </div>
       </form>
-      <p>{result}</p>
+      <div className="h-full w-full">
+        <textarea
+          className="border-2 h-full w-full"
+          readOnly
+          value={result}
+        ></textarea>
+      </div>
     </>
   );
 }
