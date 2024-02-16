@@ -32,89 +32,174 @@ function CredentialInputComponent() {
     runId: number;
   }
 
+  interface GetExecutionReportResponseData {
+    page: number;
+    content: string;
+  }
+
+  interface GetExecutionReportResponse {
+    total: number;
+    data: GetExecutionReportResponseData[];
+    hasmore: boolean;
+  }
+
   const OnSubmit = (data: CredentialInput) => {
-    const postExecutions = async (
+    async function postExecutions(
       host: string,
       port: number,
       env: string,
       username: string,
       password: string
-    ) => {
-      const runIdMaps: RunIdMap[] = [];
+    ) {
       let resultString = "";
+      const runIdMaps: RunIdMap[] = [];
 
-      environmentConfigs
-        .filter((config: environmentConfig) => config.env === env)
-        .map(async (envConfig) => {
-          const data = JSON.stringify({
-            object_name: "SCRI.EXECUTE.WITH.JSON.INPUT.JSON",
-            execution_option: "execute",
-          });
-
-          const config = {
-            method: "post",
-            maxBodyLength: Infinity,
-            url:
-              "https://" +
-              host +
-              ":" +
-              port +
-              "/ae/api/v1/" +
-              envConfig.client +
-              "/executions",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            auth: {
-              username: username,
-              password: password,
-            },
-            data: data,
-          };
-
-          resultString += "Loading Client " + envConfig.client + "...\n";
-          setResult(resultString);
-          await axios
-            .request(config)
-            .then((response) => {
-              const postExecutionResponse =
-                response.data as PostExecutionResponse;
-              console.log(
-                "Client " +
-                  envConfig.client +
-                  "has been executed with run_id " +
-                  postExecutionResponse.runId
-              );
-              runIdMaps.push({
-                client: envConfig.client,
-                runId: postExecutionResponse.runId,
-              });
-              resultString += "Client " + envConfig.client + " - SUCCESS\n";
-              setResult(resultString);
-            })
-            .catch((error) => {
-              console.log("error from postExecutions");
-              console.log(error);
-              alert(
-                "Please check client" +
-                  envConfig.client +
-                  " - " +
-                  (error.response?.data?.message || error.message) +
-                  "\n"
-              );
-              resultString += "Client " + envConfig.client + " - FAILED\n";
-              setResult(resultString);
+      await Promise.all(
+        environmentConfigs
+          .filter((config: environmentConfig) => config.env === env)
+          .map(async (envConfig) => {
+            const data = JSON.stringify({
+              object_name: "SCRI.EXECUTE.WITH.JSON.INPUT.JSON",
+              execution_option: "execute",
             });
-        });
-    };
+
+            const config = {
+              method: "post",
+              maxBodyLength: Infinity,
+              url:
+                "https://" +
+                host +
+                ":" +
+                port +
+                "/ae/api/v1/" +
+                envConfig.client +
+                "/executions",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              auth: {
+                username: username,
+                password: password,
+              },
+              data: data,
+            };
+
+            resultString += "Loading Client " + envConfig.client + "...\n";
+            setResult(resultString);
+            await axios
+              .request(config)
+              .then((response) => {
+                const postExecutionResponse =
+                  response.data as PostExecutionResponse;
+                console.log(
+                  "Client " +
+                    envConfig.client +
+                    "has been executed with run_id " +
+                    postExecutionResponse.runId
+                );
+                runIdMaps.push({
+                  client: envConfig.client,
+                  runId: postExecutionResponse.runId,
+                });
+                resultString += "Client " + envConfig.client + " - SUCCESS\n";
+                setResult(resultString);
+              })
+              .catch((error) => {
+                console.log("error from postExecutions");
+                console.log(error);
+                alert(
+                  "Please check client" +
+                    envConfig.client +
+                    " - " +
+                    (error.response?.data?.message || error.message) +
+                    "\n"
+                );
+                resultString += "Client " + envConfig.client + " - FAILED\n";
+                setResult(resultString);
+              });
+          })
+      );
+
+      return runIdMaps;
+    }
+
+    async function getExecutionsReport(
+      host: string,
+      port: number,
+      username: string,
+      password: string,
+      runIdMaps: RunIdMap[]
+    ) {
+      let reportString = "";
+
+      console.log(runIdMaps);
+
+      runIdMaps.forEach(async function (runIdMap) {
+        const config = {
+          method: "get",
+          maxBodyLength: Infinity,
+          url:
+            "https://" +
+            host +
+            ":" +
+            port +
+            "/ae/api/v1/" +
+            runIdMap.client +
+            "/executions/" +
+            runIdMap.runId +
+            "/reports/ACT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username: username,
+            password: password,
+          },
+        };
+
+        await axios
+          .request(config)
+          .then((response) => {
+            const getExecutionReportResponse =
+              response.data as GetExecutionReportResponse;
+            reportString += "******************* SOF *******************\n";
+            reportString += getExecutionReportResponse.data[0].content + "\n";
+            reportString += "******************* EOF *******************\n";
+            setResult(reportString);
+          })
+          .catch((error) => {
+            console.log(
+              "Failed to get report from client " +
+                runIdMap.client +
+                " run_id " +
+                runIdMap.runId
+            );
+            console.log(error);
+            reportString +=
+              "Failed to get report from client " +
+              runIdMap.client +
+              " run_id " +
+              runIdMap.runId +
+              "\n";
+            setResult(reportString);
+          });
+      });
+    }
 
     async function main(data: CredentialInput) {
-      await postExecutions(
+      const runIdMaps = await postExecutions(
         data.host,
         data.port,
         data.env,
         data.username,
         data.password
+      );
+      await getExecutionsReport(
+        data.host,
+        data.port,
+        data.username,
+        data.password,
+        runIdMaps
       );
     }
 
