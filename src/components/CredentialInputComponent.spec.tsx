@@ -59,7 +59,10 @@ describe("test CredentialInput component", () => {
       url: "https://host:0/ae/api/v1/0/executions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+      },
+      authen: {
+        username: "username",
+        password: "password",
       },
       data: '{"object_name":"SCRI.EXECUTE.WITH.JSON.INPUT.JSON","execution_option":"execute"}',
     };
@@ -109,7 +112,10 @@ describe("test CredentialInput component", () => {
       url: "https://host:0/ae/api/v1/0/executions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+      },
+      authen: {
+        username: "username",
+        password: "password",
       },
       data: '{"object_name":"SCRI.EXECUTE.WITH.JSON.INPUT.JSON","execution_option":"execute"}',
     };
@@ -163,7 +169,10 @@ describe("test CredentialInput component", () => {
       url: "https://host:0/ae/api/v1/0/executions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+      },
+      authen: {
+        username: "username",
+        password: "password",
       },
       data: '{"object_name":"SCRI.EXECUTE.WITH.JSON.INPUT.JSON","execution_option":"execute"}',
     };
