@@ -5,7 +5,6 @@ import axios from "axios";
 function CredentialInputComponent() {
   const { register, handleSubmit } = useForm<CredentialInput>();
   const [result, setResult] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   interface environmentConfig {
     env: string;
@@ -40,7 +39,6 @@ function CredentialInputComponent() {
       password: string
     ) => {
       try {
-        setIsLoading(true);
         await environmentConfigs
           .filter((config: environmentConfig) => config.env === env)
           .map((envConfig) => {
@@ -82,7 +80,7 @@ function CredentialInputComponent() {
               });
           });
       } finally {
-        setIsLoading(false);
+        console.log("done");
       }
     };
 
