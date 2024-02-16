@@ -1,12 +1,12 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import CredentialInputComponent from "./CredentialInputComponent";
 import axios from "axios";
+import { MockedFunction } from "vitest";
 
 vi.mock("axios");
+const mockAxiosRequest = axios.request as MockedFunction<typeof axios.request>;
 
 describe("test CredentialInput component", () => {
-  beforeAll(() => {});
-
   it("renders the form", () => {
     const { getByLabelText, getByText } = render(<CredentialInputComponent />);
     expect(getByLabelText(/host/i)).toBeDefined();
@@ -24,7 +24,7 @@ describe("test CredentialInput component", () => {
         executeid: 0,
       },
     };
-    axios.request.mockResolvedValue(mockResponse);
+    mockAxiosRequest.mockResolvedValue(mockResponse);
     fireEvent.change(getByLabelText(/host/i), {
       target: {
         value: "host",
@@ -74,7 +74,7 @@ describe("test CredentialInput component", () => {
     const mockError = {
       message: "Unauthorized",
     };
-    axios.request.mockRejectedValue(mockError);
+    mockAxiosRequest.mockRejectedValue(mockError);
     fireEvent.change(getByLabelText(/host/i), {
       target: {
         value: "host",
@@ -128,7 +128,7 @@ describe("test CredentialInput component", () => {
         },
       },
     };
-    axios.request.mockRejectedValue(mockError);
+    mockAxiosRequest.mockRejectedValue(mockError);
     fireEvent.change(getByLabelText(/host/i), {
       target: {
         value: "host",
