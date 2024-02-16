@@ -61,7 +61,7 @@ function CredentialInputComponent() {
               headers: {
                 "Content-Type": "application/json",
               },
-              authen: {
+              auth: {
                 username: username,
                 password: password,
               },

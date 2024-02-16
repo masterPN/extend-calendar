@@ -60,7 +60,7 @@ describe("test CredentialInput component", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      authen: {
+      auth: {
         username: "username",
         password: "password",
       },
@@ -113,7 +113,7 @@ describe("test CredentialInput component", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      authen: {
+      auth: {
         username: "username",
         password: "password",
       },
@@ -170,7 +170,7 @@ describe("test CredentialInput component", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      authen: {
+      auth: {
         username: "username",
         password: "password",
       },
