@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 
 function CredentialInputComponent() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<CredentialInput>();
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,13 +17,13 @@ function CredentialInputComponent() {
     { env: "sys1", client: 1 },
   ];
 
-  interface CredentialInput {
+  type CredentialInput = {
     host: string;
     port: number;
     env: string;
     username: string;
     password: string;
-  }
+  };
 
   const OnSubmit = (data: CredentialInput) => {
     const host = data.host;
