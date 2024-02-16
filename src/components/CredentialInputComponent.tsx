@@ -60,7 +60,10 @@ function CredentialInputComponent() {
                 "/executions",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Basic " + btoa(username + ":" + password),
+              },
+              authen: {
+                username: username,
+                password: password,
               },
               data: data,
             };
