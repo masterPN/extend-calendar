@@ -4,7 +4,8 @@ import axios from "axios";
 
 function CredentialInputComponent() {
   const { register, handleSubmit } = useForm<CredentialInput>();
-  const [result, setResult] = useState("");
+  const [resultPostExecution, setResultPostExecution] = useState("");
+  const [resultGetReport, setResultGetReport] = useState("");
   const environmentConfigs: environmentConfig[] = [
     { env: "sys0", client: 0 },
     { env: "sys0", client: 1 },
@@ -85,7 +86,7 @@ function CredentialInputComponent() {
             };
 
             resultString += "Loading Client " + envConfig.client + "...\n";
-            setResult(resultString);
+            setResultPostExecution(resultString);
             await axios
               .request(config)
               .then((response) => {
@@ -102,7 +103,7 @@ function CredentialInputComponent() {
                   runId: postExecutionResponse.runId,
                 });
                 resultString += "Client " + envConfig.client + " - SUCCESS\n";
-                setResult(resultString);
+                setResultPostExecution(resultString);
               })
               .catch((error) => {
                 console.log("error from postExecutions");
@@ -115,11 +116,11 @@ function CredentialInputComponent() {
                     "\n"
                 );
                 resultString += "Client " + envConfig.client + " - FAILED\n";
-                setResult(resultString);
+                setResultPostExecution(resultString);
               });
           })
       );
-
+      setResultPostExecution(resultString);
       return runIdMaps;
     }
 
@@ -165,7 +166,7 @@ function CredentialInputComponent() {
             reportString += "******************* SOF *******************\n";
             reportString += getExecutionReportResponse.data[0].content + "\n";
             reportString += "******************* EOF *******************\n";
-            setResult(reportString);
+            setResultGetReport(reportString);
           })
           .catch((error) => {
             console.log(
@@ -181,9 +182,10 @@ function CredentialInputComponent() {
               " run_id " +
               runIdMap.runId +
               "\n";
-            setResult(reportString);
+            setResultGetReport(reportString);
           });
       });
+      setResultGetReport(reportString);
     }
 
     async function main(data: CredentialInput) {
@@ -280,12 +282,23 @@ function CredentialInputComponent() {
           </button>
         </div>
       </form>
-      <div className="h-full w-full">
-        <textarea
-          className="border-2 h-full w-full"
-          readOnly
-          value={result}
-        ></textarea>
+      <div className="h-fit w-full mt-12">
+        <div>
+          <label>Execuitons</label>
+          <textarea
+            className="border-2 h-36 w-full"
+            readOnly
+            value={resultPostExecution}
+          ></textarea>
+        </div>
+        <div>
+          <label>Reports</label>
+          <textarea
+            className="border-2 h-36 w-full"
+            readOnly
+            value={resultGetReport}
+          ></textarea>
+        </div>
       </div>
     </>
   );
